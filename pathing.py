@@ -24,6 +24,7 @@ def get_random_path():
 
     # Get the index of the target node directly from global_game_data
     target_node_index = global_game_data.target_node[global_game_data.current_graph_index]
+    assert(0 <= target_node_index < len(current_graph))
 
     # Start by randomly choosing a node from the adjacency list of the start node (index 0)
     next_node = random.choice(current_graph[0][1])
@@ -40,7 +41,11 @@ def get_random_path():
         next_node = random.choice(current_graph[next_node][1])
         path.append(int(next_node))
 
+    assert(target_node_index in path)
+    assert(path[-1] == exit_node_index)
+
     return path
+
 
 def get_dfs_path():
     return [1,2]
