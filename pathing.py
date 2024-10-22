@@ -71,6 +71,8 @@ def get_dfs_path():
     start_node = 0
     target_node = global_game_data.target_node[graph_index]
     end_node = len(current_graph) - 1
+    target_node_index = global_game_data.target_node[global_game_data.current_graph_index]
+
 
     # Initialize visited set and parents dictionary
     visited = set()
@@ -101,6 +103,9 @@ def get_dfs_path():
         # Combine the two paths
         path.extend(reverse_path)
 
+    assert(target_node_index in path)
+    assert(path[-1] == end_node)
+
     return path
 
 
@@ -110,6 +115,8 @@ def get_bfs_path():
     start_node = 0
     target_node = global_game_data.target_node[graph_index]
     end_node = len(current_graph) - 1
+    target_node_index = global_game_data.target_node[global_game_data.current_graph_index]
+
 
     # Initialize frontier queue, visited set, and parent mapping for the first BFS phase
     frontier = [start_node]
@@ -163,6 +170,9 @@ def get_bfs_path():
     
     # Reverse the second half and append to the overall path
     path.extend(reverse_path[::-1])
+
+    assert(target_node_index in path)
+    assert(path[-1] == end_node)
 
     return path
 
