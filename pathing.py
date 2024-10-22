@@ -105,6 +105,8 @@ def get_dfs_path():
 
     assert(target_node_index in path)
     assert(path[-1] == end_node)
+    for i in range(len(path) - 1):
+        assert path[i + 1] in current_graph[path[i]][1], f"Vertices {path[i]} and {path[i + 1]} are not connected."
 
     return path
 
@@ -173,6 +175,8 @@ def get_bfs_path():
 
     assert(target_node_index in path)
     assert(path[-1] == end_node)
+    for i in range(len(path) - 1):
+        assert path[i + 1] in current_graph[path[i]][1], f"Vertices {path[i]} and {path[i + 1]} are not connected."
 
     return path
 
