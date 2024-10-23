@@ -181,6 +181,5 @@ def get_bfs_path():
     return path
 
 
-
 def get_dijkstra_path():
     return [1,2]

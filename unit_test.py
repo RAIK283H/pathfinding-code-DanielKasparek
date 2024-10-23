@@ -1,6 +1,9 @@
 import math
 import unittest
-
+import graph_data
+import global_game_data
+from pathing import get_dfs_path, get_bfs_path
+from unittest import mock
 
 class TestPathFinding(unittest.TestCase):
 
@@ -23,6 +26,74 @@ class TestPathFinding(unittest.TestCase):
         self.assertNotEqual(almost_pi, pi)
         self.assertAlmostEqual(first=almost_pi, second=pi, delta=1e-1)
 
+
+    def test_bfs_path(self):
+        graph_data.graph_data = [[
+            [(100, 100), [1]],
+            [(200, 200), [0, 2, 3]],
+            [(300, 300), [1, 4]],
+            [(400, 400), [1]],
+            [(500, 500), [2]]
+        ]]
+
+        target_node = 3
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_bfs_path()
+        expected = [0, 1, 3, 1, 2, 4]
+        self.assertEqual(actual_path, expected)
+
+    def test_bfs_path_failure(self):
+        graph_data.graph_data = [[
+            [(100, 100), [1]],
+            [(200, 200), [0, 2, 3]],
+            [(300, 300), [1, 4]],
+            [(400, 400), [1]],
+            [(500, 500), [2]]
+        ]]
+
+        target_node = 3
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_bfs_path()
+        expected = [0, 1, 2, 1, 2, 4]
+        self.assertNotEqual(actual_path, expected)
+
+    def test_dfs_path(self):
+        graph_data.graph_data = [[
+            [(100, 100), [1]],
+            [(200, 200), [0, 2, 3]],
+            [(300, 300), [1, 4]],
+            [(400, 400), [1]],
+            [(500, 500), [2]]
+        ]]
+
+        target_node = 3
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_dfs_path()
+        expected = [0, 1, 3, 1, 2, 4]
+        self.assertEqual(actual_path, expected)
+
+    def test_dfs_path_failure(self):
+        graph_data.graph_data = [[
+            [(100, 100), [1]],
+            [(200, 200), [0, 2, 3]],
+            [(300, 300), [1, 4]],
+            [(400, 400), [1]],
+            [(500, 500), [2]]
+        ]]
+
+        target_node = 3
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_bfs_path()
+        expected = [0, 1, 2, 1, 2, 4]
+        self.assertNotEqual(actual_path, expected)
 
 if __name__ == '__main__':
     unittest.main()
