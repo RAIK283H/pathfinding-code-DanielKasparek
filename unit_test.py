@@ -2,6 +2,7 @@ import math
 import unittest
 import graph_data
 import global_game_data
+import permutation
 from pathing import get_dfs_path, get_bfs_path
 from unittest import mock
 
@@ -94,6 +95,52 @@ class TestPathFinding(unittest.TestCase):
         actual_path = get_bfs_path()
         expected = [0, 1, 2, 1, 2, 4]
         self.assertNotEqual(actual_path, expected)
+
+
+    def test_permutations_of_3(self):
+        expected_permutations = [
+            [1, 2, 3],
+            [1, 3, 2],
+            [2, 1, 3],
+            [2, 3, 1],
+            [3, 2, 1],
+            [3, 1, 2]
+        ]
+        result = permutation.steinhaus_johnson_trotter(3)
+        self.assertEqual(sorted(result), sorted(expected_permutations))
+
+    def test_permutations_of_4(self):
+        result = permutation.steinhaus_johnson_trotter(4)
+        self.assertEqual(len(result), 24)  # 4! = 24
+
+    def test_find_hamiltonian_cycles(self):
+        # Graph with Hamiltonian cycles:
+        graph = [
+            [(100, 100), [1, 3]],
+            [(0, 0), [0, 2, 3]],
+            [(100, 100), [1, 3]],
+            [(100, 0), [1, 2, 4]],
+            [(200, 100), [3]]
+        ]
+
+        # Expected Hamiltonian cycles
+        expected_cycles = [
+            [1, 2, 3], [1, 3, 2], [3, 1, 2], [3, 2, 1], [2, 3, 1], [2, 1, 3]
+        ]
+
+        self.assertEqual(permutation.find_hamiltonian_cycles(graph), expected_cycles)
+
+        # Graph with no Hamiltonian cycle
+        graph_no_cycle = [
+            [(100, 200), [1]],
+            [(0, 0), [0, 2]],
+            [(100, 100), [1, 3]],
+            [(100, 0), [2, 4]],
+            [(200, 100), [3]]
+        ]
+
+        self.assertEqual(permutation.find_hamiltonian_cycles(graph_no_cycle), -1)
+
 
 if __name__ == '__main__':
     unittest.main()
