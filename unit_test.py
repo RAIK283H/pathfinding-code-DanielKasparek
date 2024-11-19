@@ -3,7 +3,7 @@ import unittest
 import graph_data
 import global_game_data
 import permutation
-from pathing import get_dfs_path, get_bfs_path
+from pathing import get_dfs_path, get_bfs_path, get_dijkstra_path
 from unittest import mock
 
 class TestPathFinding(unittest.TestCase):
@@ -140,6 +140,63 @@ class TestPathFinding(unittest.TestCase):
         ]
 
         self.assertEqual(permutation.find_hamiltonian_cycles(graph_no_cycle), -1)
+
+    def test_dijkstra_path_with_shortest_path_having_more_nodes(self):
+        graph_data.graph_data = [[
+            [(300, 300), [1, 4]],
+            [(350, 350), [0, 2]],
+            [(400, 350), [1, 3]],
+            [(450, 350), [2, 5]],
+            [(0, 0), [0, 5]],
+            [(500, 350), [3, 4]]
+        ]]
+
+        target_node = 3
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_dijkstra_path()
+        expected = [0, 1, 2, 3, 5]
+        self.assertEqual(actual_path, expected)
+
+    
+    def test_dijkstra_path_with_equal_costs(self):
+        graph_data.graph_data = [[
+            [(100, 100), [1, 2]],
+            [(200, 200), [0, 3]],
+            [(200, 200), [0, 3]],
+            [(300, 300), [1, 2, 4]],
+            [(400, 400), [3, 5]],
+            [(500, 500), [4]]
+        ]]
+
+        target_node = 3
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_dijkstra_path()
+        expected = [0, 1, 3, 4, 5]  # There are multiple paths; any valid shortest path works.
+        self.assertEqual(actual_path, expected)
+
+    def test_dijkstra_path_avoids_longer_routes(self):
+        graph_data.graph_data = [[
+            [(0, 0), [1, 2]],
+            [(1, 1), [0, 3]],
+            [(2, 2), [0, 4]],
+            [(3, 3), [1, 5]],
+            [(4, 4), [2, 5]],
+            [(5, 5), [3, 4, 6]],
+            [(6, 6), []]
+        ]]
+
+        target_node = 5
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = {0: target_node}
+
+        actual_path = get_dijkstra_path()
+        expected = [0, 1, 3, 5, 6]  # Shortest path through Node 4 instead of longer detour.
+        self.assertEqual(actual_path, expected)
+
 
 
 if __name__ == '__main__':

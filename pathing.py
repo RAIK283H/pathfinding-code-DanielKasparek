@@ -2,6 +2,8 @@ import graph_data
 import global_game_data
 from numpy import random
 import graph
+import heapq
+import math
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -182,4 +184,59 @@ def get_bfs_path():
 
 
 def get_dijkstra_path():
-    return [1,2]
+    graph_index = global_game_data.current_graph_index
+    current_graph = graph_data.graph_data[graph_index]
+    start_node = 0
+    target_node = global_game_data.target_node[graph_index]
+    exit_node = len(current_graph) - 1
+
+    def dijkstra(graph, start, goal):
+        # Priority queue: (distance, node, path_so_far)
+        pq = []
+        heapq.heappush(pq, (0, start, []))
+        visited = set()
+
+        while pq:
+            current_distance, current_node, path = heapq.heappop(pq)
+
+            if current_node in visited:
+                continue
+
+            # Update visited nodes and path
+            visited.add(current_node)
+            path = path + [current_node]
+
+            # If goal is reached, return the path
+            if current_node == goal:
+                return path
+
+            # Explore neighbors
+            for neighbor in graph[current_node][1]:
+                if neighbor not in visited:
+                    distance_to_neighbor = math.sqrt(((graph[current_node][0][0] - graph[neighbor][0][0]) ** 2) 
+                                                     + ((graph[current_node][0][1] - graph[neighbor][0][1]) ** 2))
+                    heapq.heappush(pq, (current_distance + distance_to_neighbor, neighbor, path))
+
+        return None  # No path found
+
+    # Find shortest path from start to target
+    path_to_target = dijkstra(current_graph, start_node, target_node)
+    if path_to_target is None:
+        raise ValueError("No path found from start to target node.")
+
+    # Find shortest path from target to exit
+    path_to_exit = dijkstra(current_graph, target_node, exit_node)
+    if path_to_exit is None:
+        raise ValueError("No path found from target node to exit.")
+
+    # Combine the two paths, ensuring the target node isn't duplicated
+    complete_path = path_to_target + path_to_exit[1:]
+
+    # Postcondition checks
+    assert complete_path[0] == start_node, "Path does not start at the start node."
+    assert complete_path[-1] == exit_node, "Path does not end at the exit node."
+    for i in range(len(complete_path) - 1):
+        assert complete_path[i + 1] in current_graph[complete_path[i]][1], \
+            f"Vertices {complete_path[i]} and {complete_path[i + 1]} are not connected."
+
+    return complete_path
