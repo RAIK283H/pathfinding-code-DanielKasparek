@@ -4,6 +4,7 @@ import graph_data
 import global_game_data
 import permutation
 from pathing import get_dfs_path, get_bfs_path, get_dijkstra_path
+from f_w import floyd_warshall, reconstruct_path, adjacency_list_to_matrix
 from unittest import mock
 
 class TestPathFinding(unittest.TestCase):
@@ -197,7 +198,64 @@ class TestPathFinding(unittest.TestCase):
         expected = [0, 1, 3, 5, 6]  # Shortest path through Node 4 instead of longer detour.
         self.assertEqual(actual_path, expected)
 
+    def setUp(self):
+        """
+        Set up sample test graphs and expected results for testing.
+        """
+        # Graph 1: Simple 3-node triangle graph (fully connected)
+        self.graph1 = [
+            [(0, 0), [1, 2]],
+            [(1, 0), [0, 2]],
+            [(0, 1), [0, 1]]
+        ]
+        self.graph1_matrix = [
+            [0, 1, math.sqrt(2)],
+            [1, 0, 1],
+            [math.sqrt(2), 1, 0]
+        ]
 
+        # Graph 2: Disconnected graph
+        self.graph2 = [
+            [(0, 0), [1]],
+            [(1, 0), [0]],
+            [(0, 1), []]
+        ]
+        self.graph2_matrix = [
+            [0, 1, float('inf')],
+            [1, 0, float('inf')],
+            [float('inf'), float('inf'), 0]
+        ]
+
+    def test_floyd_warshall(self):
+        """
+        Test Floyd-Warshall algorithm on a sample graph.
+        """
+        # Test with graph1
+        distances, predecessors = floyd_warshall(self.graph1_matrix)
+        expected_distances = self.graph1_matrix  # No changes expected for fully connected graph
+        for i in range(len(distances)):
+            for j in range(len(distances)):
+                self.assertAlmostEqual(distances[i][j], expected_distances[i][j], places=5)
+
+        # Test with graph2
+        distances, predecessors = floyd_warshall(self.graph2_matrix)
+        self.assertEqual(distances[0][2], float('inf'))
+        self.assertEqual(predecessors[0][2], None)
+
+    def test_reconstruct_path(self):
+        """
+        Test path reconstruction using the predecessor matrix.
+        """
+        # Test with graph1
+        _, predecessors = floyd_warshall(self.graph1_matrix)
+        path = reconstruct_path(predecessors, 0, 2)
+        self.assertEqual(path, [0, 2])
+
+        # Test with graph2
+        _, predecessors = floyd_warshall(self.graph2_matrix)
+        path = reconstruct_path(predecessors, 0, 2)
+        self.assertIsNone(path)  # No path exists
+        
 
 if __name__ == '__main__':
     unittest.main()
